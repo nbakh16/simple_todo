@@ -18,20 +18,73 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
 
-    final ThemeData _lightTheme = ThemeData(
-
-    );
-
-    final ThemeData _darkTheme = ThemeData(
-
-    );
-
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'My Todo',
-      home: HomeView(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
+      home: const HomeView(),
     );
   }
+
+  final ThemeData lightTheme = ThemeData(
+      primarySwatch: Colors.lightBlue,
+      brightness: Brightness.light,
+      appBarTheme: const AppBarTheme(backgroundColor: Colors.lightBlue),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.lightBlue,
+          foregroundColor: Colors.black
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+          hintStyle: const TextStyle(color: Colors.grey),
+          filled: true,
+          fillColor: Colors.grey[200]
+
+      ),
+      iconTheme: const IconThemeData(
+          color: Colors.black26
+      ),
+      listTileTheme: ListTileThemeData(
+          tileColor: Colors.lightGreen[400],
+          selectedTileColor: Colors.deepOrange[200]
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+          )
+      )
+  );
+
+  final ThemeData darkTheme = ThemeData(
+      primarySwatch: Colors.deepPurple,
+      brightness: Brightness.dark,
+      appBarTheme: const AppBarTheme(backgroundColor: Colors.deepPurple),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+          hintStyle: TextStyle(color: Colors.grey),
+          filled: true,
+          fillColor: Colors.black54,
+          labelStyle: TextStyle(color: Colors.white)
+      ),
+      iconTheme: IconThemeData(
+        color: Colors.deepPurple[500]
+      ),
+      listTileTheme: const ListTileThemeData(
+          tileColor: Colors.green,
+          selectedTileColor: Colors.amber
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+          )
+      )
+  );
 }
 
 

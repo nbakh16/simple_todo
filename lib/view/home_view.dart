@@ -20,19 +20,19 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-Do'),
+        title: const Text('To-Do', style: TextStyle(color: Colors.white),),
       ),
       body: todoList.isEmpty
           ? Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(
                     Icons.error_outline,
                     size: 100,
-                    color: Colors.black26,
+                    color: Theme.of(context).iconTheme.color,
                   ),
-                  Text(
+                  const Text(
                     "No To-Do available\n Tap '+' to add new.",
                     style: TextStyle(
                       fontSize: 18,
@@ -52,14 +52,24 @@ class _HomeViewState extends State<HomeView> {
               itemBuilder: (context, index) {
                 return ListTile(
                   tileColor: todoList[index].isDone
-                      ? Colors.lightGreen[400]
-                      : Colors.yellow[200],
+                      ? Theme.of(context).listTileTheme.tileColor
+                      : Theme.of(context).listTileTheme.selectedTileColor,
                   onLongPress: () {
                     todoList[index].toggleDone();
                     setState(() {});
                   },
-                  title: Text(todoList[index].title),
-                  subtitle: Text(todoList[index].description),
+                  title: Text(todoList[index].title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500
+                    ),
+                  ),
+                  subtitle: Text(todoList[index].description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400
+                  ),
+                  ),
                   leading: IconButton(
                     onPressed: () {
                       editTodoModalBottomSheet(index);
@@ -70,7 +80,7 @@ class _HomeViewState extends State<HomeView> {
                     onPressed: () {
                       todoDelete(index);
                     },
-                    icon: const Icon(Icons.delete_forever),
+                    icon: const Icon(Icons.delete_forever,),
                   ),
                 );
               }),
@@ -170,10 +180,7 @@ class _HomeViewState extends State<HomeView> {
                           }
                         });
                       },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
+                      style: Theme.of(context).elevatedButtonTheme.style,
                       child: const Text('Add todo'))
                 ],
               ),
@@ -273,7 +280,6 @@ class _HomeViewState extends State<HomeView> {
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
-        filled: true,
-        fillColor: Colors.grey[200]);
+    );
   }
 }
