@@ -30,7 +30,7 @@ class _HomeViewState extends State<HomeView> {
                   Icon(
                     Icons.error_outline,
                     size: 100,
-                    color: Theme.of(context).iconTheme.color,
+                    color: Theme.of(context).iconTheme.color!.withOpacity(0.5),
                   ),
                   const Text(
                     "No To-Do available\n Tap '+' to add new.",
@@ -41,46 +41,72 @@ class _HomeViewState extends State<HomeView> {
                 ],
               ),
             )
-          : ListView.separated(
+          : ListView.builder(
               itemCount: todoList.length,
-              separatorBuilder: (context, index) {
-                return const Divider(
-                  thickness: 1,
-                  height: 1,
-                );
-              },
               itemBuilder: (context, index) {
-                return ListTile(
-                  tileColor: todoList[index].isDone
-                      ? Theme.of(context).listTileTheme.tileColor
-                      : Theme.of(context).listTileTheme.selectedTileColor,
-                  onLongPress: () {
-                    todoList[index].toggleDone();
-                    setState(() {});
-                  },
-                  title: Text(todoList[index].title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500
+                return Card(
+                  clipBehavior: Clip.hardEdge,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)
+                  ),
+                  elevation: 5,
+                  child: ClipPath(
+                    clipper: ShapeBorderClipper(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)
+                      )
                     ),
-                  ),
-                  subtitle: Text(todoList[index].description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400
-                  ),
-                  ),
-                  leading: IconButton(
-                    onPressed: () {
-                      editTodoModalBottomSheet(index);
-                    },
-                    icon: const Icon(Icons.edit),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      todoDelete(index);
-                    },
-                    icon: const Icon(Icons.delete_forever,),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide(
+                              color: todoList[index].isDone
+                                  ? Theme.of(context).listTileTheme.tileColor!
+                                  : Theme.of(context).listTileTheme.selectedTileColor!,
+                              width: 15
+                            )
+                          ),
+                        ),
+                        alignment: Alignment.centerLeft,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          tileColor: todoList[index].isDone
+                              ? Theme.of(context).listTileTheme.tileColor?.withOpacity(0.33)
+                              : Theme.of(context).listTileTheme.selectedTileColor?.withOpacity(0.33),
+                          onLongPress: () {
+                            todoList[index].toggleDone();
+                            setState(() {});
+                          },
+                          title: Text(todoList[index].title,
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500
+                            ),
+                          ),
+                          subtitle: Text(todoList[index].description,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400
+                            ),
+                          ),
+                          leading: IconButton(
+                            onPressed: () {
+                              editTodoModalBottomSheet(index);
+                            },
+                            icon: Icon(Icons.edit,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {
+                              todoDelete(index);
+                            },
+                            icon: Icon(Icons.delete_forever,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        ),
+                    ),
                   ),
                 );
               }),
@@ -112,6 +138,7 @@ class _HomeViewState extends State<HomeView> {
                   Navigator.pop(context);
                   setState(() {});
                 },
+                style: Theme.of(context).textButtonTheme.style,
                 child: const Text('Okay')
             )
           ],

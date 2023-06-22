@@ -43,17 +43,22 @@ class _MyAppState extends State<MyApp> {
 
       ),
       iconTheme: const IconThemeData(
-          color: Colors.black26
+          color: Colors.deepPurple
       ),
       listTileTheme: ListTileThemeData(
-          tileColor: Colors.lightGreen[400],
-          selectedTileColor: Colors.deepOrange[200]
+          tileColor: Colors.lightGreen,
+          selectedTileColor: Colors.deepOrange
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
           )
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.blue
+        )
       )
   );
 
@@ -72,16 +77,21 @@ class _MyAppState extends State<MyApp> {
           labelStyle: TextStyle(color: Colors.white)
       ),
       iconTheme: IconThemeData(
-        color: Colors.deepPurple[500]
+        color: Colors.deepPurple[200]
       ),
       listTileTheme: const ListTileThemeData(
           tileColor: Colors.green,
-          selectedTileColor: Colors.amber
+          selectedTileColor: Colors.orange
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+          )
+      ),
+      textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+              foregroundColor: Colors.deepPurple[200]
           )
       )
   );
