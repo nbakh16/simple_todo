@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import '../model/todo_model.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+  final VoidCallback switchTheme;
+  final bool isLight;
+
+  const HomeView(this.switchTheme, this.isLight, {super.key});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -20,7 +23,20 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To-Do', style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'My To-Do',
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          IconButton(
+            onPressed: widget.switchTheme,
+            icon: Visibility(
+              visible: widget.isLight,
+              replacement: const Icon(Icons.dark_mode),
+              child: const Icon(Icons.sunny),
+            )
+          )
+        ],
       ),
       body: todoList.isEmpty
           ? Center(
@@ -42,70 +58,80 @@ class _HomeViewState extends State<HomeView> {
               ),
             )
           : ListView.builder(
+              physics: const BouncingScrollPhysics(),
               itemCount: todoList.length,
               itemBuilder: (context, index) {
                 return Card(
                   clipBehavior: Clip.hardEdge,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)
-                  ),
+                      borderRadius: BorderRadius.circular(12)),
                   elevation: 5,
                   child: ClipPath(
                     clipper: ShapeBorderClipper(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)
-                      )
-                    ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12))),
                     child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
+                      decoration: BoxDecoration(
+                        border: Border(
                             left: BorderSide(
-                              color: todoList[index].isDone
-                                  ? Theme.of(context).listTileTheme.tileColor!
-                                  : Theme.of(context).listTileTheme.selectedTileColor!,
-                              width: 15
-                            )
-                          ),
+                                color: todoList[index].isDone
+                                    ? Theme.of(context).listTileTheme.tileColor!
+                                    : Theme.of(context)
+                                        .listTileTheme
+                                        .selectedTileColor!,
+                                width: 10)),
+                      ),
+                      alignment: Alignment.centerLeft,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        onTap: () => todoDetailsShowDialog(index),
+                        onLongPress: () {
+                          todoList[index].toggleDone();
+                          setState(() {});
+                        },
+                        tileColor: todoList[index].isDone
+                            ? Theme.of(context)
+                                .listTileTheme
+                                .tileColor
+                                ?.withOpacity(0.33)
+                            : Theme.of(context)
+                                .listTileTheme
+                                .selectedTileColor
+                                ?.withOpacity(0.33),
+                        title: Text(
+                          todoList[index].title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
                         ),
-                        alignment: Alignment.centerLeft,
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          tileColor: todoList[index].isDone
-                              ? Theme.of(context).listTileTheme.tileColor?.withOpacity(0.33)
-                              : Theme.of(context).listTileTheme.selectedTileColor?.withOpacity(0.33),
-                          onLongPress: () {
-                            todoList[index].toggleDone();
-                            setState(() {});
+                        subtitle: Text(
+                          todoList[index].description,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        leading: IconButton(
+                          onPressed: () {
+                            editTodoModalBottomSheet(index);
                           },
-                          title: Text(todoList[index].title,
-                            style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500
-                            ),
-                          ),
-                          subtitle: Text(todoList[index].description,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400
-                            ),
-                          ),
-                          leading: IconButton(
-                            onPressed: () {
-                              editTodoModalBottomSheet(index);
-                            },
-                            icon: Icon(Icons.edit,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {
-                              todoDelete(index);
-                            },
-                            icon: Icon(Icons.delete_forever,
-                              color: Theme.of(context).iconTheme.color,
-                            ),
+                          icon: Icon(
+                            Icons.edit,
+                            color: Theme.of(context).iconTheme.color,
                           ),
                         ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            todoDeleteShowDialog(index);
+                          },
+                          icon: Icon(
+                            Icons.delete_forever,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -117,34 +143,60 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  void todoDelete(int index) {
+  void todoDeleteShowDialog(int index) {
     showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          title: const Text('Are you sure?'),
-          content: Text("Deleting '${todoList[index].title}' todo!"),
-          actions: [
-            TextButton(
-              onPressed: (){
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel')
-            ),
-            TextButton(
-                onPressed: (){
-                  todoList.removeAt(index);
-                  Navigator.pop(context);
-                  setState(() {});
-                },
-                style: Theme.of(context).textButtonTheme.style,
-                child: const Text('Okay')
-            )
-          ],
-        );
-      }
-    );
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            title: const Text('Are you sure?'),
+            content: Text("Deleting '${todoList[index].title}' todo!"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel')),
+              TextButton(
+                  onPressed: () {
+                    todoList.removeAt(index);
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                  style: Theme.of(context).textButtonTheme.style,
+                  child: const Text('Okay'))
+            ],
+          );
+        });
+  }
+
+  void todoDetailsShowDialog(int index) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                    width: 3,
+                    color: todoList[index].isDone
+                        ? Theme.of(context).listTileTheme.tileColor!
+                        : Theme.of(context).listTileTheme.selectedTileColor!)),
+            title: Text(todoList[index].title),
+            content: SingleChildScrollView(
+                child: Text(
+              todoList[index].description,
+            )),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Okay')),
+            ],
+          );
+        });
   }
 
   void addTodoModalBottomSheet() {
@@ -173,34 +225,27 @@ class _HomeViewState extends State<HomeView> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: titleTEController,
+                  customTextFormField(
+                      textEditingController: titleTEController,
+                      title: 'Title',
+                      description: 'Title of Todo',
                       maxLines: 1,
-                      decoration:
-                          textFieldInputDecoration('Title', 'Title of Todo'),
-                      validator: validateTFField,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: descriptionTEController,
-                      maxLines: 3,
-                      decoration: textFieldInputDecoration(
-                          'Description', 'Brief description'),
-                      validator: validateTFField,
-                    ),
-                  ),
+                      maxLength: 50),
+                  customTextFormField(
+                      textEditingController: descriptionTEController,
+                      title: 'Description',
+                      description: 'Brief description',
+                      minLines: 2,
+                      maxLines: 5,
+                      maxLength: 250),
                   ElevatedButton(
                       onPressed: () {
                         setState(() {
                           final isValidForm = formKey.currentState!.validate();
 
                           if (isValidForm) {
-                            todoList.add(Todo(titleTEController.text,
-                                descriptionTEController.text, false));
+                            todoList.add(Todo(titleTEController.text.trim(),
+                                descriptionTEController.text.trim(), false));
                             titleTEController.clear();
                             descriptionTEController.clear();
                             Navigator.pop(context);
@@ -245,26 +290,19 @@ class _HomeViewState extends State<HomeView> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: titleTEController,
+                  customTextFormField(
+                      textEditingController: titleTEController,
+                      title: 'Title',
+                      description: 'Title of Todo',
                       maxLines: 1,
-                      decoration:
-                          textFieldInputDecoration('Title', 'Title of Todo'),
-                      validator: validateTFField,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: descriptionTEController,
-                      maxLines: 3,
-                      decoration: textFieldInputDecoration(
-                          'Description', 'Brief description'),
-                      validator: validateTFField,
-                    ),
-                  ),
+                      maxLength: 50),
+                  customTextFormField(
+                      textEditingController: descriptionTEController,
+                      title: 'Description',
+                      description: 'Brief description',
+                      minLines: 2,
+                      maxLines: 5,
+                      maxLength: 250),
                   ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -292,21 +330,42 @@ class _HomeViewState extends State<HomeView> {
         });
   }
 
+  Padding customTextFormField({
+    required TextEditingController textEditingController,
+    int? minLines,
+    int? maxLines,
+    int? maxLength,
+    String title = 'default',
+    String description = 'default',
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: textEditingController,
+        minLines: minLines,
+        maxLines: maxLines,
+        maxLength: maxLength,
+        decoration: textFieldInputDecoration(title, description),
+        validator: validateTFField,
+      ),
+    );
+  }
+
+  InputDecoration textFieldInputDecoration(String label, String hint) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+    );
+  }
+
   String? validateTFField(value) {
     if (value!.trim().isEmpty) {
       return 'Field cannot be empty!';
     } else {
       return null;
     }
-  }
-
-  InputDecoration textFieldInputDecoration(String label, String hint) {
-    return InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-        ),
-    );
   }
 }

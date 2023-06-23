@@ -15,6 +15,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+  bool isLight = true;
+  void switchTheme() {
+    setState(() {
+      isLight = !isLight;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -23,18 +32,18 @@ class _MyAppState extends State<MyApp> {
       title: 'My Todo',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
-      home: const HomeView(),
+      themeMode: isLight ? ThemeMode.light : ThemeMode.dark,
+      home: HomeView(switchTheme, isLight),
     );
   }
 
   final ThemeData lightTheme = ThemeData(
-      primarySwatch: Colors.lightBlue,
+      primarySwatch: Colors.teal,
       brightness: Brightness.light,
-      appBarTheme: const AppBarTheme(backgroundColor: Colors.lightBlue),
+      // appBarTheme: const AppBarTheme(backgroundColor: Colors.lightBlue),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.lightBlue,
-          foregroundColor: Colors.black
+          // backgroundColor: Colors.lightBlue,
+          foregroundColor: Colors.white
       ),
       inputDecorationTheme: InputDecorationTheme(
           hintStyle: const TextStyle(color: Colors.grey),
@@ -43,9 +52,9 @@ class _MyAppState extends State<MyApp> {
 
       ),
       iconTheme: const IconThemeData(
-          color: Colors.deepPurple
+          color: Colors.teal
       ),
-      listTileTheme: ListTileThemeData(
+      listTileTheme: const ListTileThemeData(
           tileColor: Colors.lightGreen,
           selectedTileColor: Colors.deepOrange
       ),
@@ -77,11 +86,11 @@ class _MyAppState extends State<MyApp> {
           labelStyle: TextStyle(color: Colors.white)
       ),
       iconTheme: IconThemeData(
-        color: Colors.deepPurple[200]
+        color: Colors.deepPurple[100]
       ),
       listTileTheme: const ListTileThemeData(
-          tileColor: Colors.green,
-          selectedTileColor: Colors.orange
+          tileColor: Colors.lightGreen,
+          selectedTileColor: Colors.deepOrange
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
